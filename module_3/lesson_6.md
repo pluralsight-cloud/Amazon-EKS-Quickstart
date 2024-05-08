@@ -5,7 +5,7 @@ This lesson script deploy a customized VPC and EKS Cluster using a custom manife
 ## eksctl Command
 
 ```shell
-eksctl create cluster -f 1-cluster-config.yaml
+eksctl create cluster -f manifest_files/1-cluster-config.yaml
 ```
 
 ## Manifest File
