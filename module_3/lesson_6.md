@@ -1,0 +1,97 @@
+# Demo Viewing the EKS VPC
+
+This lesson script deploy a customized VPC and EKS Cluster using a custom manifest file.
+
+## eksctl Command
+
+```shell
+eksctl create cluster -f 1-cluster-config.yaml
+```
+
+## Manifest File
+
+**1-cluster-config.yaml**
+```yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: test
+  region: us-east-1
+
+# Creates a brand-new VPC with default settings
+vpc:
+  nat:
+    gateway: Single # other options: Disable, HighlyAvailable, Single (default)
+  # enable public access and private access
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+
+availabilityZones:
+  - us-east-1a
+  - us-east-1d
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+
+fargateProfiles:
+  - name: fp-default
+    selectors:
+      # All workloads in the "default" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: default
+      # All workloads in the "kube-system" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: kube-system
+      - namespace: cert-manager
+  - name: fp-dev
+    selectors:
+      # All workloads in the "dev" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: game-2048
+        labels:
+          app.kubernetes.io/name: app-2048
+    tags:
+      env: dev
+      name: fp-dev
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: ebs-csi-controller-sa
+        namespace: kube-system
+      wellKnownPolicies:
+        ebsCSIController: true
+    - metadata:
+        name: efs-csi-controller-sa
+        namespace: kube-system
+      wellKnownPolicies:
+        efsCSIController: true
+    - metadata:
+        name: external-dns
+        namespace: kube-system
+      wellKnownPolicies:
+        externalDNS: true
+    - metadata:
+        name: cluster-autoscaler
+        namespace: kube-system
+        labels: { aws-usage: "cluster-ops" }
+      wellKnownPolicies:
+        autoScaler: true
+
+addons:
+  - name: vpc-cni
+    version: latest # auto discovers the latest available
+    attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  - name: coredns
+    version: latest # auto discovers the latest available
+  - name: kube-proxy
+    version: latest
+  - name: aws-ebs-csi-driver
+    wellKnownPolicies: # add IAM and service account
+      ebsCSIController: true
+```
