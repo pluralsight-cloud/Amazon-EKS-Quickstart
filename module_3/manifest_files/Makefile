@@ -10,7 +10,7 @@ SHELL := /bin/bash
 2 setup:	## Setup
 	$(info Please set up AWS credential information in environment variables to use this Makefile...)
 	@printf "Creating the cluster using the specified manifest file...\n"
-	#eksctl create cluster -f ./m04-01-cluster-config.yaml
+	eksctl create cluster -f ./1-cluster-config.yaml
 	@printf "\nCreating required IAM role and policy for AWS Load Balancer components...\n"
 	@python3 python/create_eks_iam_role.py
 	kubectl apply -f ./2-aws-load-balancer-controller-service-account.yaml

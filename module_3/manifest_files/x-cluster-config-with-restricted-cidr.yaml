@@ -13,6 +13,8 @@ vpc:
   clusterEndpoints:
     publicAccess: true
     privateAccess: true
+  publicAccessCIDRs:
+    - <YOUR_IP_HERE>
 
 availabilityZones:
   - us-east-1a
