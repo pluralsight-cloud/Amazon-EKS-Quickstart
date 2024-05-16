@@ -1,5 +1,9 @@
 # Manual Steps
 
+---
+
+## Creation
+
 Here is each step listed out in the order of execution.
 Use this file if following along, step by step.
 
@@ -8,7 +12,7 @@ Use this file if following along, step by step.
 1. Deploy EKS Cluster
 
 ```shell
-eksctl create cluster -f ./1-cluster-config
+eksctl create cluster -f ./1-cluster-config.yaml
 ```
 
 2. Creating required IAM role and policy for AWS Load Balancer components
@@ -66,4 +70,49 @@ kubectl apply -f ./8-ingress-config.yaml --validate=false
 
 ```shell
 kubectl get ingress/ingress-2048 -n game-2048
+```
+
+10. Deploying TLS Version
+
+Remember to first create your ACM TLS Cert, as well as the required Route 53 records for your ALB. Also, remember to remove the `dualstack.` from the Alias record name!
+
+```shell
+kubectl apply -f ./9-tls-ingress-config.yaml
+```
+
+---
+
+## Cleaning Up
+
+Here are the steps to clean up the resources if you need to!
+
+1. Remove the existing manifest resources in reverse order
+
+```shell
+kubectl delete -f ./9-tls-ingress-config.yaml 2>/dev/null
+kubectl delete -f ./8-ingress-config.yaml 2>/dev/null
+kubectl delete -f ./7-ingressClass-config.yaml
+kubectl delete -f ./6-service-config.yaml
+kubectl delete -f ./5-deployment-config.yaml
+```
+
+2. Begin to delete the cluster
+
+```shell
+eksctl delete cluster -f ./1-cluster-config.yaml --force=true
+```
+
+3. Clean up any leftover resources (_Usually VPC_)
+
+> Running twice to lazily double check deletion status
+
+```shell
+python3 python/clean_up.py
+python3 python/clean_up.py
+```
+
+4. Delete cloudformation stack by force
+
+```shell
+aws cloudformation delete-stack --stack-name eksctl-test-cluster
 ```
