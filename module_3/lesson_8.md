@@ -1,13 +1,13 @@
-# Demo: Deploying Your Service Account and Cert Manager
+# Demo: Deploying our Application and Service
 
-The steps in this script will deploy our service account (SA) and some key components via deployments and services.
-This is required to load balance our application via an Ingress (ALB).
+This set of scripted steps deploys our application, as well as our Ingress!
 
 ```shell
-kubectl apply -f .manifest_files/2-aws-load-balancer-controller-service-account.yaml
-kubectl apply -f .manifest_files/3-cert-manager.yaml
-kubectl wait --for=condition=available --timeout=120s deployment/cert-manager -n cert-manager
-kubectl wait --for=condition=available --timeout=120s deployment/cert-manager-cainjector -n cert-manager
-kubectl wait --for=condition=available --timeout=120s deployment/cert-manager-webhook -n cert-manager
-python3 python/update_manifests.py
+kubectl apply -f .manifest_files/4-load-balancer-controller-config.yaml
+kubectl wait --for=condition=available --timeout=120s deployment/aws-load-balancer-controller -n kube-system
+kubectl apply -f ./5-deployment-config.yaml
+kubectl wait --for=condition=available --timeout=120s deployment/deployment-2048 -n game-2048
+kubectl apply -f ./6-service-config.yaml
+kubectl apply -f ./7-ingressClass-config.yaml
+kubectl apply -f ./8-ingress-config.yaml --validate=false
 ```
