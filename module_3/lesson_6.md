@@ -1,4 +1,4 @@
-# Demo Viewing the EKS VPC
+# Demo: Creating a Custom EKS Cluster
 
 This lesson script deploy a customized VPC and EKS Cluster using a custom manifest file.
 
