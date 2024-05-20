@@ -5,14 +5,14 @@
 We have provided a Makefile for you to leverage if desired.
 This Makefile provides all of the required steps for deploying your application to Amazon EKS successfully.
 
-## Steps
+### Steps
 
 Below we will walk through each step of the process and provide an overview of what the step completes each time.
 The steps are listed in the order you should execute them.
 
 **You can reference the targets by name, or by numbered step! Both solutions are provided.**
 
-### install
+#### 1. install
 
 ```shell
 make install
@@ -28,7 +28,7 @@ During this `install` step of the Make process, you will create a new Python vir
 You will see two additional commands output for you to copy and paste, including activating the new venv, and installing
 the required packages via pip.
 
-### setup
+#### 2. setup
 
 ```shell
 make setup
@@ -57,7 +57,7 @@ The `setup` step will go through and perform several functions.
    move on to running another custom Python script that updates an existing template with the required information and
    then outputs the **4-load-balancer-controller-config.yaml** file.
 
-### deploy
+#### 3. deploy
 
 ```shell
 make deploy
@@ -81,7 +81,7 @@ This `deploy` step will now work on deploying the rest of the application and th
 5. The Ingress Class config is used when we deploy the **8-ingress-config.yaml** manifest immediately after. This
    Ingress (_ALB_) references the Service that we deployed in the previous steps as the backend.
 
-### check
+#### 4. check
 
 ```shell
 make check
@@ -104,12 +104,12 @@ ingress-2048   alb     *       k8s-game2048-ingress2-0d50dcef8e-784051621.us-eas
 You can then test status by navigating to the provided ALB address in the output! **Make sure you navigate to port 80
 only (HTTP)!**
 
-### dns and tls
+#### dns and tls
 
 Now we can test creating a new Route53 DNS Record to reference our application ALB. Then, we will implement a TLS
 certificate and redirect HTTP to HTTPS!
 
-#### Create DNS Record
+##### Create DNS Record
 
 1. Navigate to Route 53
 1. Find and select your Sandbox Public Hosted Zone (Example: `677538000670.realhandsonlabs.net`)
@@ -123,7 +123,7 @@ certificate and redirect HTTP to HTTPS!
 6. Leave everything else the same and click `Create records`
 7. Test navigating to your HTTP DNS record (Example: `http://app.677538000670.realhandsonlabs.net`)
 
-#### Create TLS
+##### Create TLS
 
 With public DNS working, let's implement TLS!
 
@@ -140,7 +140,7 @@ With public DNS working, let's implement TLS!
 10. Once verified the record exists, go back to ACM and refresh the page with the cert listed.
 11. It should change to _Issued_ fairly quickly.
 
-#### Implement Ingress TLS
+#### (Optional) Implement Ingress TLS
 
 1. You should now see a `9-tls-ingress-config.yaml` manifest file in your directory
 2. Run the following command to set up TLS and HTTP redirects:
@@ -152,7 +152,7 @@ kubectl apply -f 9-tls-ingress-config.yaml
 3. This will eventually implement TLS for your recently created Ingress! Congrats!
 4. Test via HTTPS (Example: `https://app.677538000670.realhandsonlabs.net`)
 
-### clean
+#### 5. clean
 
 ```shell
 make clean
